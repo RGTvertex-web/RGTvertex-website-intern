@@ -143,8 +143,7 @@ export default function Resources() {
                   <motion.div
                     key={doc.title}
                     initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-60px" }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: i * 0.06 }}
                     onMouseMove={handleMouseMove}
                   >
@@ -167,8 +166,7 @@ export default function Resources() {
                   <motion.div
                     key={agent.slug}
                     initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-60px" }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: (i % 3) * 0.06 }}
                     className="grid grid-cols-1 gap-6 py-10 first:pt-0 md:grid-cols-[auto_1fr_auto] md:items-center"
                   >
