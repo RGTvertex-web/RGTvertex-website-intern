@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, MapPin, Clock, ChevronDown, CheckCircle2 } from "lucide-react";
+import { GraduationCap, MapPin, Clock, CalendarClock, ChevronDown, CheckCircle2 } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import { Section, Card, Pill } from "@/components/ui/Primitives";
 import Button from "@/components/ui/Button";
 import Seo from "@/components/ui/Seo";
 import ApplyModal from "@/components/careers/ApplyModal";
 import { jobs } from "@/data/careers";
+
+function formatDuration(duration) {
+  if (Array.isArray(duration)) return duration.join(" / ");
+  return duration;
+}
 
 function JobCard({ job, isOpen, onToggle, onApply }) {
   return (
@@ -19,9 +24,12 @@ function JobCard({ job, isOpen, onToggle, onApply }) {
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-semibold tracking-tight text-ink">{job.role}</h3>
           <div className="flex flex-wrap items-center gap-2">
-            <Pill className="gap-1.5"><Briefcase size={12} /> {job.experience}</Pill>
+            <Pill className="gap-1.5"><GraduationCap size={12} /> Student / New grad</Pill>
             <Pill className="gap-1.5"><MapPin size={12} /> {job.location}</Pill>
             <Pill className="gap-1.5"><Clock size={12} /> {job.type}</Pill>
+            {job.duration && (
+              <Pill className="gap-1.5"><CalendarClock size={12} /> {formatDuration(job.duration)}</Pill>
+            )}
           </div>
         </div>
         <ChevronDown

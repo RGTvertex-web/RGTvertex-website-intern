@@ -15,6 +15,7 @@ export default function ApplyModal({ job, onClose }) {
     phone: "",
     linkedin: "",
     portfolio: "",
+    duration: "",
   });
   const [resumeFile, setResumeFile] = useState(null);
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
@@ -47,6 +48,11 @@ export default function ApplyModal({ job, onClose }) {
       return;
     }
 
+    if (!form.duration) {
+      setErrorMessage("Please select your preferred internship duration.");
+      return;
+    }
+
     setStatus("submitting");
     setErrorMessage("");
 
@@ -69,6 +75,7 @@ export default function ApplyModal({ job, onClose }) {
         phone: form.phone,
         linkedin: form.linkedin || null,
         portfolio: form.portfolio || null,
+        duration: form.duration,
         resume_url: publicUrlData?.publicUrl ?? null,
         status: "new",
       });
@@ -128,7 +135,7 @@ export default function ApplyModal({ job, onClose }) {
             <>
               <span className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-faint">Apply for</span>
               <h3 className="mt-1 text-2xl font-semibold tracking-tight text-ink">{job.role}</h3>
-              <p className="mt-1 text-sm text-ink-soft">{job.experience} · {job.location}</p>
+              <p className="mt-1 text-sm text-ink-soft">{job.type} · {job.location}</p>
 
               <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
                 <label className="flex flex-col gap-1.5 text-sm text-ink">
@@ -163,6 +170,22 @@ export default function ApplyModal({ job, onClose }) {
                     />
                   </label>
                 </div>
+
+                <label className="flex flex-col gap-1.5 text-sm text-ink">
+                  Preferred duration
+                  <select
+                    required
+                    value={form.duration}
+                    onChange={update("duration")}
+                    className="rounded-xl border border-border bg-white px-4 py-3 text-sm text-ink focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/10"
+                  >
+                    <option value="" disabled>
+                      Select duration
+                    </option>
+                    <option value="3 months">3 months</option>
+                    <option value="6 months">6 months</option>
+                  </select>
+                </label>
 
                 <label className="flex flex-col gap-1.5 text-sm text-ink">
                   LinkedIn profile
