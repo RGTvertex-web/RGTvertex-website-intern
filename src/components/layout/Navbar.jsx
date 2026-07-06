@@ -65,8 +65,20 @@ export default function Navbar() {
             <li key={link.label} className="relative">
               {link.children ? (
                 <div
-                  onMouseEnter={() => setOpenDropdown(link.label)}
-                  onMouseLeave={() => setOpenDropdown(null)}
+                  onMouseEnter={() => {
+                    // Only open dropdown on real hover devices (mouse).
+                    // On touch devices iOS fires mouseenter during the tap gesture,
+                    // which triggers a re-render that shifts elements and causes
+                    // iOS Safari to cancel the click — making first tap a no-op.
+                    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+                      setOpenDropdown(link.label);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+                      setOpenDropdown(null);
+                    }
+                  }}
                 >
                   <Link
                     to={link.href}
