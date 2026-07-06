@@ -1,167 +1,228 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, MapPin, Clock, CalendarClock, ChevronDown, CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, Sparkles, AlertCircle, Loader2 } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
-import { Section, Card, Pill } from "@/components/ui/Primitives";
+import { Section, Card } from "@/components/ui/Primitives";
 import Button from "@/components/ui/Button";
+import NetworkGraphic from "@/components/ui/NetworkGraphic";
 import Seo from "@/components/ui/Seo";
-import ApplyModal from "@/components/careers/ApplyModal";
-import { jobs } from "@/data/careers";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 
-function formatDuration(duration) {
-  if (Array.isArray(duration)) return duration.join(" / ");
-  return duration;
-}
+export default function Contact() {
+  const { user } = useAuth();
 
-function JobCard({ job, isOpen, onToggle, onApply }) {
-  return (
-    <Card hover={false} className="overflow-hidden p-0">
-      <button
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className="flex w-full flex-col gap-3 p-6 text-left sm:flex-row sm:items-center sm:justify-between sm:gap-6"
-      >
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-semibold tracking-tight text-ink">{job.role}</h3>
-          <div className="flex flex-wrap items-center gap-2">
-            <Pill className="gap-1.5"><GraduationCap size={12} /> Student / New grad</Pill>
-            <Pill className="gap-1.5"><MapPin size={12} /> {job.location}</Pill>
-            <Pill className="gap-1.5"><Clock size={12} /> {job.type}</Pill>
-            {job.duration && (
-              <Pill className="gap-1.5"><CalendarClock size={12} /> {formatDuration(job.duration)}</Pill>
-            )}
-          </div>
-        </div>
-        <ChevronDown
-          size={20}
-          className={`shrink-0 self-end text-ink-soft transition-transform duration-300 sm:self-auto ${isOpen ? "rotate-180 text-accent" : ""}`}
-        />
-      </button>
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [form, setForm] = useState({ name: "", email: "", company: "", companySize: "1–20", message: "" });
 
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-border"
-          >
-            <div className="flex flex-col gap-6 p-6 pt-6">
-              <p className="text-sm leading-relaxed text-ink-soft">{job.description}</p>
+  // Pre-fill from the logged-in account
+  useEffect(() => {
+    if (user) {
+      setForm((f) => ({
+        ...f,
+        name: f.name || user.user_metadata?.full_name || "",
+        email: f.email || user.email || "",
+        company: f.company || user.user_metadata?.company || "",
+      }));
+    }
+  }, [user]);
 
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-[0.1em] text-ink-faint">Required skills</h4>
-                  <ul className="flex flex-col gap-2">
-                    {job.skills.map((s) => (
-                      <li key={s} className="flex items-start gap-2 text-sm text-ink-soft">
-                        <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-accent" />
-                        <span>{s}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="mb-3 text-xs font-semibold uppercase tracking-[0.1em] text-ink-faint">Responsibilities</h4>
-                  <ul className="flex flex-col gap-2">
-                    {job.responsibilities.map((r) => (
-                      <li key={r} className="flex items-start gap-2 text-sm text-ink-soft">
-                        <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-accent" />
-                        <span>{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+  const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-              <Button onClick={() => onApply(job)} size="sm" className="self-start">
-                Apply now
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </Card>
-  );
-}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
 
-export default function Careers() {
-  const [openSlug, setOpenSlug] = useState(jobs[0]?.slug ?? null);
-  const [applyingTo, setApplyingTo] = useState(null);
+    if (!isSupabaseConfigured) {
+      setErrorMessage("This form isn't connected yet. Please email us directly at rgtvertex.ai@outlook.com.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = {
+        name: form.name,
+        email: form.email,
+        company: form.company || null,
+        subject: `Company size: ${form.companySize}`,
+        message: form.message,
+      };
+
+      const { error } = await supabase.from("contact_messages").insert(payload);
+      if (error) throw error;
+
+      // Forward the enquiry to rgtvertex.ai@outlook.com via a Supabase Edge
+      // Function. This is a best-effort call: if the function isn't deployed
+      // yet, the message is still saved above and the form still succeeds.
+      // See SUPABASE_SETUP.md → "Email forwarding" for deployment steps.
+      supabase.functions.invoke("send-contact-email", { body: payload }).catch(() => { });
+
+      setSubmitted(true);
+    } catch (err) {
+      const message =
+        (typeof err?.message === "string" && err.message.trim()) ||
+        (typeof err?.error_description === "string" && err.error_description.trim()) ||
+        "Something went wrong. Please try again.";
+      setErrorMessage(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <>
       <Seo
-        title="Careers — RGTvertex"
-        description="Join RGTvertex as an intern and help build the AI workforce of the future. Explore open, fully remote internships in engineering, analytics, content, and social media."
+        title="Contact — RGTvertex"
+        description="Get in touch with RGTvertex to see the AI workforce in action for your business."
       />
       <PageHero
-        eyebrow="Careers"
-        title="Kickstart your career with a remote internship."
-        description="We're a small, fast-moving team shipping AI agents that businesses actually rely on. Every open role right now is a fully remote internship, here's where we could use you."
-        bgImage="/careers-hero.png"
+        eyebrow="Contact"
+        title="Let's talk about what an AI workforce could take off your team's plate."
+        description="Tell us a bit about your business and we'll get back to you personally — no ticket queue."
+        bgImage="/contact-hero.png"
         bgClass="bg-cover bg-center sm:bg-[length:auto_92%] sm:bg-right bg-no-repeat"
       />
 
       <Section>
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="corner-glow relative mx-auto mb-10 flex max-w-3xl flex-col items-center gap-3 overflow-hidden rounded-2xl bg-ink px-6 py-6 text-center shadow-glow sm:flex-row sm:gap-4 sm:text-left"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-grid opacity-[0.06]" />
-          <div className="relative flex shrink-0 items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
-            </div>
-          <p className="relative text-sm font-medium leading-relaxed text-white/90">
-            Every listed role below is a <span className="text-white">fully remote internship</span>,
-            built for students and new grads ready to work on real AI products.
-          </p>
-        </motion.div>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.2fr]">
+          <div className="flex flex-col gap-6">
+            <motion.a
+              href="mailto:rgtvertex.ai@outlook.com"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="corner-glow group flex flex-col gap-2 rounded-3xl border border-border bg-white p-7 transition-shadow duration-300 hover:shadow-glow"
+            >
+              <span className="text-xs uppercase tracking-[0.14em] text-ink-faint">Email us directly</span>
+              <span className="inline-flex items-center gap-2 text-xl font-semibold tracking-tight text-ink">
+                rgtvertex.ai@outlook.com
+                <ArrowUpRight size={18} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
+              </span>
+              <span className="text-sm text-ink-soft">We typically reply within one business day.</span>
+            </motion.a>
 
-        <div className="mx-auto flex max-w-3xl flex-col gap-4">
-          <AnimatePresence mode="popLayout">
-            {jobs.map((job) => (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.08 }}
+              className="relative flex flex-1 flex-col justify-end overflow-hidden rounded-3xl border border-border bg-ink p-8 text-white"
+            >
+              <div className="bg-grid pointer-events-none absolute inset-0 opacity-50" />
+              <div className="animate-float-a pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-accent/25 blur-3xl" />
+              <div className="animate-float-b pointer-events-none absolute -bottom-14 -left-8 h-40 w-40 rounded-full bg-accent/20 blur-3xl" />
+              <NetworkGraphic className="pointer-events-none absolute -right-6 -top-6 z-0 h-40 w-40 opacity-80" />
+
+              {/* mini illustration: floating status card */}
               <motion.div
-                key={job.slug}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                className="relative mb-6 w-fit rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm"
               >
-                <JobCard
-                  job={job}
-                  isOpen={openSlug === job.slug}
-                  onToggle={() => setOpenSlug((s) => (s === job.slug ? null : job.slug))}
-                  onApply={setApplyingTo}
-                />
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+                  </span>
+                  <span className="text-xs font-medium text-white/80">Agent active</span>
+                </div>
+                <div className="mt-3 flex items-end gap-1.5">
+                  {[10, 18, 12, 22, 16, 26, 20].map((h, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ height: 0 }}
+                      animate={{ height: h }}
+                      transition={{ duration: 0.5, delay: 0.2 + i * 0.05, ease: "easeOut" }}
+                      className="w-1.5 rounded-full bg-accent/70"
+                      style={{ height: h }}
+                    />
+                  ))}
+                </div>
               </motion.div>
-            ))}
-          </AnimatePresence>
+
+              <p className="relative text-lg font-semibold leading-snug tracking-tight">
+                Seven agents, one workforce, built to scale with your business.
+              </p>
+              <p className="relative mt-2 text-sm leading-relaxed text-white/65">
+                Reach out and we'll help you find the right place to start.
+              </p>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+          >
+            <Card hover={false} className="corner-glow p-8">
+              {submitted ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="flex flex-col items-center justify-center gap-2 py-16 text-center"
+                >
+                  <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-accent">
+                    <Sparkles size={20} strokeWidth={1.8} />
+                  </div>
+                  <p className="text-lg font-semibold text-ink">Message sent.</p>
+                  <p className="text-sm text-ink-soft">We'll be in touch within one business day.</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1.5 text-sm text-ink">
+                      Full name
+                      <input required value={form.name} onChange={update("name")} className="rounded-xl border border-border bg-white px-4 py-3 text-sm transition-all duration-200 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/10" />
+                    </label>
+                    <label className="flex flex-col gap-1.5 text-sm text-ink">
+                      Email address
+                      <input required type="email" value={form.email} onChange={update("email")} className="rounded-xl border border-border bg-white px-4 py-3 text-sm transition-all duration-200 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/10" />
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1.5 text-sm text-ink">
+                      Company
+                      <input value={form.company} onChange={update("company")} className="rounded-xl border border-border bg-white px-4 py-3 text-sm transition-all duration-200 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/10" />
+                    </label>
+                    <label className="flex flex-col gap-1.5 text-sm text-ink">
+                      Company size
+                      <select value={form.companySize} onChange={update("companySize")} className="rounded-xl border border-border bg-white px-4 py-3 text-sm transition-all duration-200 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/10">
+                        <option>1–20</option>
+                        <option>21–100</option>
+                        <option>101–500</option>
+                        <option>500+</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label className="flex flex-col gap-1.5 text-sm text-ink">
+                    What would you like to talk about?
+                    <textarea rows={5} required value={form.message} onChange={update("message")} className="rounded-xl border border-border bg-white px-4 py-3 text-sm transition-all duration-200 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/10" />
+                  </label>
+                  {errorMessage && (
+                    <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                      <span>{errorMessage}</span>
+                    </div>
+                  )}
+                  <Button type="submit" className="self-start" disabled={submitting} icon={false}>
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 size={16} className="animate-spin" /> Sending…
+                      </span>
+                    ) : (
+                      "Send message"
+                    )}
+                  </Button>
+                </form>
+              )}
+            </Card>
+          </motion.div>
         </div>
       </Section>
-
-      <Section className="border-t border-border bg-bg-soft-2 !py-16">
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
-          <h2 className="text-2xl font-semibold tracking-tight text-ink">Don't see a role that fits?</h2>
-          <p className="text-sm leading-relaxed text-ink-soft">
-            We're always open to meeting people who are excited about AI agents. Send us your resume
-            anyway, we review every application.
-          </p>
-          <Button href="mailto:rgtvertex.ai@outlook.com" variant="secondary" size="sm">
-            Email your resume
-          </Button>
-        </div>
-      </Section>
-
-      {applyingTo && <ApplyModal job={applyingTo} onClose={() => setApplyingTo(null)} />}
     </>
   );
 }
