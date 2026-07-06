@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function LoadingScreen() {
+// persist=true  → stays visible until parent unmounts it (used as auth gate)
+// persist=false → auto-hides after 650 ms (used as initial page-load splash)
+export default function LoadingScreen({ persist = false }) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    if (persist) return; // never auto-hide when used as a gate
     const timer = setTimeout(() => setVisible(false), 650);
     return () => clearTimeout(timer);
-  }, []);
+  }, [persist]);
 
   return (
     <AnimatePresence>
