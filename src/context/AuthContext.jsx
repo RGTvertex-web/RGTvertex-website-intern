@@ -13,7 +13,12 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    // Safety timeout — if Supabase takes too long (e.g. network issues on
+    // Vercel cold starts), don't leave the app stuck on the loading screen.
+    const safetyTimer = setTimeout(() => setLoading(false), 3000);
+
     supabase.auth.getSession().then(({ data }) => {
+      clearTimeout(safetyTimer);
       setSession(data.session);
       setLoading(false);
     });
@@ -22,7 +27,10 @@ export function AuthProvider({ children }) {
       setSession(newSession);
     });
 
-    return () => listener.subscription.unsubscribe();
+    return () => {
+      clearTimeout(safetyTimer);
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   // Always turns whatever Supabase (or a network failure) throws into a
