@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ShieldCheck, Settings2, Workflow, LifeBuoy, Download } from "lucide-react";
+import { BookOpen, ShieldCheck, Settings2, Workflow, LifeBuoy, Download, Lock } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import { Section, Card } from "@/components/ui/Primitives";
 import { faqs } from "@/data/site";
@@ -10,6 +10,7 @@ import Accordion from "@/components/ui/Accordion";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import Seo from "@/components/ui/Seo";
+import { useAuth } from "@/context/AuthContext";
 
 const docs = [
   {
@@ -52,6 +53,8 @@ const handleMouseMove = (e) => {
 
 export default function Resources() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [active, setActive] = useState(location.hash === "#faqs" ? "faqs" : "documentation");
 
   useEffect(() => {
@@ -62,6 +65,15 @@ export default function Resources() {
   const selectTab = (key) => {
     setActive(key);
     window.history.replaceState(null, "", `#${key}`);
+  };
+
+  // Documentation downloads require an account. If the person isn't logged
+  // in, send them to log in first and bring them right back here afterward.
+  const handleDownloadClick = (e) => {
+    if (!user) {
+      e.preventDefault();
+      navigate("/login", { state: { from: `${location.pathname}${location.hash}` } });
+    }
   };
 
   return (
@@ -116,11 +128,11 @@ export default function Resources() {
                     Guides to get your team up and running.
                   </h2>
                 </div>
-                <a href="/RGTvertex-Documentation.pdf" download className="shrink-0">
+                <a href="/RGTvertex-Documentation.pdf" download onClick={handleDownloadClick} className="shrink-0">
                   <Button variant="secondary" className="whitespace-nowrap">
                     <span className="inline-flex items-center gap-2">
-                      <Download size={15} />
-                      Download Documentation PDF
+                      {user ? <Download size={15} /> : <Lock size={15} />}
+                      {user ? "Download Documentation PDF" : "Log in to download"}
                     </span>
                   </Button>
                 </a>
@@ -178,11 +190,11 @@ export default function Resources() {
                       </div>
                       <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-ink-soft">{agent.short}</p>
                     </div>
-                    <a href={`/docs/${agent.slug}.pdf`} download className="shrink-0">
+                    <a href={`/docs/${agent.slug}.pdf`} download onClick={handleDownloadClick} className="shrink-0">
                       <Button variant="secondary" size="sm" className="whitespace-nowrap">
                         <span className="inline-flex items-center gap-2">
-                          <Download size={14} />
-                          Download Document
+                          {user ? <Download size={14} /> : <Lock size={14} />}
+                          {user ? "Download Document" : "Log in to download"}
                         </span>
                       </Button>
                     </a>
