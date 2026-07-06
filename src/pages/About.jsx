@@ -44,8 +44,7 @@ export default function About() {
         <div className="mx-auto flex max-w-3xl flex-col gap-6">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-lg leading-relaxed text-ink-soft md:text-xl"
           >
@@ -57,8 +56,7 @@ export default function About() {
           </motion.p>
           <motion.p
             initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-base leading-relaxed text-ink-soft"
           >
@@ -71,7 +69,7 @@ export default function About() {
       {/* Vision & Mission */}
       <Section className="!pt-0">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <Card hover={false} className="corner-glow h-full">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-accent">
                 <Eye size={20} strokeWidth={1.6} />
@@ -84,7 +82,7 @@ export default function About() {
               </p>
             </Card>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
             <Card hover={false} className="corner-glow h-full">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-accent">
                 <Target size={20} strokeWidth={1.6} />
@@ -110,8 +108,7 @@ export default function About() {
               <motion.div
                 key={v.title}
                 initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
                 <Card className="corner-glow h-full bg-white hover:border-accent/30 hover:shadow-glow">
@@ -131,8 +128,7 @@ export default function About() {
       <Section>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="mx-auto flex max-w-3xl gap-6"
         >
@@ -158,8 +154,7 @@ export default function About() {
         <div className="container-x relative z-10 flex flex-col items-center gap-5 text-center">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50"
           >
@@ -167,8 +162,7 @@ export default function About() {
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-balance max-w-2xl text-3xl font-semibold tracking-tight text-white md:text-5xl md:leading-[1.15]"
           >
@@ -176,8 +170,7 @@ export default function About() {
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm font-medium uppercase tracking-[0.1em] text-white/70 md:text-base"
           >
