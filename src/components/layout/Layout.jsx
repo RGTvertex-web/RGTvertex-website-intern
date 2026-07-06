@@ -11,6 +11,14 @@ export default function Layout() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Framer Motion's IntersectionObserver (used by whileInView) does not
+    // automatically re-evaluate elements that are already in the viewport
+    // after a client-side navigation. Dispatching a synthetic scroll event
+    // after the new page has rendered forces the observer to re-check all
+    // elements, so whileInView content is visible on the FIRST click.
+    const id = setTimeout(() => window.dispatchEvent(new Event("scroll")), 50);
+    return () => clearTimeout(id);
   }, [pathname]);
 
   return (
@@ -19,13 +27,13 @@ export default function Layout() {
       <ScrollProgress />
       <Navbar />
       <main className="flex-1">
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence initial={false}>
           <motion.div
             key={pathname}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.28, ease: "easeInOut" }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
           >
             <Outlet />
           </motion.div>
