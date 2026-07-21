@@ -86,7 +86,7 @@ export default function Resources() {
         eyebrow="Resources"
         title="Everything you need to plan, launch, and scale."
         description="Documentation and answers to the questions teams ask most before rolling out an AI workforce."
-        bgImage="/resources-hero.png"
+        bgVideo="/animation/resources-hero.mp4"
         bgClass="bg-cover bg-center sm:bg-[length:auto_92%] sm:bg-right bg-no-repeat"
       />
 

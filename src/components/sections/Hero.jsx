@@ -7,13 +7,20 @@ export default function Hero() {
     <section className="relative overflow-hidden border-b border-border">
       {/* Background layer - z-index 0 */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[url('/hero-bg1.png')] bg-cover bg-center bg-no-repeat filter grayscale opacity-95" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/70 to-white" />
+        <video 
+          src="/animation/hero-bg.mp4" 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute inset-0 h-full w-full object-cover filter grayscale opacity-95" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/50 to-white/90 backdrop-blur-[2px]" />
         <div className="grain absolute inset-0 opacity-[0.25]" />
       </div>
 
       {/* Content layer - z-index 10 */}
-      <div className="container-x relative z-10 flex flex-col items-center gap-6 py-24 text-center md:py-32">
+      <div className="container-x relative z-10 flex min-h-[85vh] flex-col items-center justify-center gap-6 py-24 text-center md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

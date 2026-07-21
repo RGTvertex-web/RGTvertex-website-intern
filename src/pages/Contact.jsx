@@ -81,7 +81,7 @@ export default function Contact() {
         eyebrow="Contact"
         title="Let's talk about what an AI workforce could take off your team's plate."
         description="Tell us a bit about your business and we'll get back to you personally — no ticket queue."
-        bgImage="/contact-hero.png"
+        bgVideo="/animation/contact-hero.mp4"
         bgClass="bg-cover bg-center sm:bg-[length:auto_92%] sm:bg-right bg-no-repeat"
       />
 

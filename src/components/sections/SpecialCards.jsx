@@ -18,7 +18,7 @@ const stats = [
 
 export default function SpecialCards() {
   return (
-    <Section className="border-y border-border bg-bg-soft-2">
+    <Section className="border-y border-border bg-bg-soft-2/50 backdrop-blur-sm">
       <Eyebrow>The RGTvertex platform</Eyebrow>
       <h2 className="mt-4 max-w-lg text-balance text-3xl font-semibold tracking-tight text-ink md:text-[2.3rem] md:leading-[1.1]">
         One workforce. Always on.
@@ -29,7 +29,7 @@ export default function SpecialCards() {
         <motion.div
           {...fadeUp}
           transition={{ duration: 0.55 }}
-          className="glow-card corner-glow flex flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-border-strong hover:shadow-glow lg:row-span-2"
+          className="glow-card corner-glow flex flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white/85 backdrop-blur-md p-8 transition-all duration-300 hover:-translate-y-1 hover:border-border-strong hover:shadow-glow lg:row-span-2"
         >
           <span className="text-sm font-semibold tracking-tight text-ink">Specialized AI Agents</span>
           <AgentsCircular />
@@ -46,7 +46,7 @@ export default function SpecialCards() {
         <motion.div
           {...fadeUp}
           transition={{ duration: 0.55, delay: 0.08 }}
-          className="corner-glow flex flex-col gap-3 rounded-3xl border border-border bg-white p-7"
+          className="corner-glow flex flex-col gap-3 rounded-3xl border border-border bg-white/85 backdrop-blur-md p-7"
         >
           <Sparkles size={20} strokeWidth={1.6} className="text-ink" />
           <h3 className="text-base font-semibold tracking-tight text-ink">Why RGTvertex?</h3>
@@ -64,7 +64,7 @@ export default function SpecialCards() {
         <motion.div
           {...fadeUp}
           transition={{ duration: 0.55, delay: 0.14 }}
-          className="flex flex-col items-center justify-center gap-2 rounded-3xl border border-border bg-white p-7 text-center"
+          className="flex flex-col items-center justify-center gap-2 rounded-3xl border border-border bg-white/85 backdrop-blur-md p-7 text-center"
         >
           <Clock size={24} strokeWidth={1.6} className="text-ink" />
           <span className="text-3xl font-semibold tracking-tight text-ink">24/7</span>
@@ -75,7 +75,7 @@ export default function SpecialCards() {
         <motion.div
           {...fadeUp}
           transition={{ duration: 0.55, delay: 0.2 }}
-          className="corner-glow flex flex-col gap-4 rounded-3xl border border-border bg-white p-8 lg:col-span-2"
+          className="corner-glow flex flex-col gap-4 rounded-3xl border border-border bg-white/85 backdrop-blur-md p-8 lg:col-span-2"
         >
           <Shield size={22} strokeWidth={1.6} className="text-ink" />
           <h3 className="text-lg font-semibold tracking-tight text-ink">Your AI Workforce</h3>
