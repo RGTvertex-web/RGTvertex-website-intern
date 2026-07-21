@@ -34,7 +34,7 @@ export default function About() {
         eyebrow="About RGTvertex"
         title="Building the Future of Enterprise AI"
         description="At RGTvertex, we're redefining how businesses work through intelligent AI. Our mission is to create a connected ecosystem of AI employees that automate operations, enhance decision-making, and enable organizations to scale with confidence."
-        bgImage="/about-hero-new.jpg"
+        bgVideo="/animation/about-hero-new.mp4"
         bgClass="bg-cover bg-center bg-no-repeat scale-105"
         bgBlur="blur-[3px]"
       />

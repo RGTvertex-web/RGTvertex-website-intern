@@ -16,7 +16,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl ?? "", supabaseAnonKey ?? "");
+export const supabase = createClient(
+  supabaseUrl || "https://placeholder.supabase.co",
+  supabaseAnonKey || "public-anon-key"
+);
 
 // Storage bucket used for career application resumes. Must match the
 // bucket name created in Supabase Storage — see SUPABASE_SETUP.md.

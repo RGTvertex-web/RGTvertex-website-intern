@@ -19,7 +19,7 @@ export default function AIAgents() {
         eyebrow="Our AI workforce"
         title="Seven agents. One connected AI workforce."
         description="Each RGTvertex agent is purpose-built for a single function inside your business, and works continuously, not just when someone remembers to ask."
-        bgImage="/ai-agents-hero.png"
+        bgVideo="/animation/ai-agents-hero.mp4"
         bgClass="bg-cover bg-center sm:bg-[length:auto_92%] sm:bg-right bg-no-repeat"
       />
 
@@ -92,7 +92,7 @@ export default function AIAgents() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 }}
-                  className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+                  className="grid grid-cols-1 gap-6 sm:grid-cols-2 items-start"
                 >
                   <div className="rounded-2xl border border-border bg-white p-6">
                     <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-ink-faint">

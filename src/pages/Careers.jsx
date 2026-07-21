@@ -128,7 +128,7 @@ export default function Careers() {
         eyebrow="Careers"
         title="Kickstart your career with a remote internship."
         description="We're a small, fast-moving team shipping AI agents that businesses actually rely on. Every role here is a fully remote internship, here's where we could use you."
-        bgImage="/careers-hero.png"
+        bgVideo="/animation/careers-hero.mp4"
         bgClass="bg-cover bg-center sm:bg-[length:auto_92%] sm:bg-right bg-no-repeat"
       />
 

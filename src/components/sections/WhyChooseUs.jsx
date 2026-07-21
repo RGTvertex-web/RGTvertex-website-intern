@@ -47,7 +47,7 @@ export default function WhyChooseUs() {
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, delay: i * 0.08 }}
             onMouseMove={handleMouseMove}
-            className="glow-card border-glow group flex flex-col gap-4 rounded-2xl border border-border bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:shadow-glow"
+            className="glow-card border-glow group flex flex-col gap-4 rounded-2xl border border-border bg-white/85 backdrop-blur-md p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:shadow-glow"
           >
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-bg-soft text-ink transition-all duration-300 group-hover:border-accent/30 group-hover:bg-accent-soft group-hover:text-accent">
               <Icon name={reason.icon} size={20} strokeWidth={1.6} />

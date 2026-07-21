@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import NetworkBackground from "@/components/ui/NetworkBackground";
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -23,6 +24,7 @@ export default function Layout() {
     <div className="flex min-h-screen flex-col bg-white">
       <LoadingScreen />
       <ScrollProgress />
+      <NetworkBackground />
       <Navbar />
       <main className="flex-1">
         <Outlet />

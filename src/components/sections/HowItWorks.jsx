@@ -52,7 +52,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <Section className="bg-bg-soft-2 border-y border-border">
+    <Section className="bg-bg-soft-2/50 backdrop-blur-sm border-y border-border">
       <SectionHeading
         eyebrow="How it works"
         title="From first conversation to a live agent, in four steps."
